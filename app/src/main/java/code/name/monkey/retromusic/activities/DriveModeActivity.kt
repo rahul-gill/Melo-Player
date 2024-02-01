@@ -95,7 +95,9 @@ class DriveModeActivity : AbsMusicServiceActivity(), Callback {
             } else {
                 repository.insertSongs(listOf(song.toSongEntity(playlist.playListId)))
             }
-            sendBroadcast(Intent(MusicService.FAVORITE_STATE_CHANGED))
+            sendBroadcast(Intent(MusicService.FAVORITE_STATE_CHANGED).apply {
+                setPackage(this@DriveModeActivity.packageName)
+            })
         }
     }
 

@@ -5,40 +5,40 @@ jetradarmobile_androidSnowfall_version = "1.2.1"
 tankery_circularSeekBar_version = "1.4.2"
 retrofit_version = "2.9.0"
 afollestad_dialog_version = "3.3.0"
-coreSplashscreen = "1.0.0"
+coreSplashscreen = "1.0.1"
 customactivityoncrash = "2.4.0"
 fadingedgelayout = "1.0.0"
 google_featureDelivery_version = "2.0.1"
-gradle = "7.4.2"
+gradle = "8.2.2"
 dhaval2404_imagepicker_version = "2.1"
 chrisbanes_insetter_version = "0.6.1"
 jaudiotagger = "2.3.15"
 yslibrary_keyboardvisibilityevent_version = "3.0.0-RC3"
 koinAndroid = "3.4.0"
-kotlinGradlePlugin = "1.8.10"
+kotlinGradlePlugin = "1.9.22"
 
-kotlinxCoroutinesAndroid = "1.6.4"
+kotlinxCoroutinesAndroid = "1.7.3"
 android_tab_library_version = "2.0.3"
 fast_scroll_libraryVersion = "1.2.0"
-lifecycle_version = "2.6.1"
+lifecycle_version = "2.7.0"
 okhttp3_loggingInterceptor_version = "5.0.0-alpha.9"
 afollestad_materialCab_version = "2.0.1"
 materialIntro = "2.0.0"
-mediarouter = "1.3.1"
+mediarouter = "1.6.0"
 nanohttpd = "2.3.1"
-navigation_version = "2.5.3"
-mdc_version = "1.9.0-beta01"
+navigation_version = "2.7.6"
+mdc_version = "1.11.0"
 glide_version = "4.15.1"
 orgEclipseEgitGithubCore = "2.1.5"
 playServicesCastFramework = "21.3.0"
-preference_version = "1.2.0"
+preference_version = "1.2.1"
 appcompat_version = "1.6.1"
 google_play_review_version = "2.0.1"
-room_version = "2.5.1"
-core_version = "1.10.0-rc01"
+room_version = "2.6.1"
+core_version = "1.12.0"
 
 #plugins
-devTools_ksp_version = "1.8.10-1.0.9"
+devTools_ksp_version = "1.9.22-1.0.17"
 ben_manes_versoin = "0.46.0"
 slidableactivity = "2.1.0"
 
@@ -111,9 +111,9 @@ nanohttpd = { group = "org.nanohttpd", name = "nanohttpd", version.ref = "nanoht
 
 #androidx
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat_version" }
-androidx-annotation = { group = "androidx.annotation", name = "annotation", version = "1.6.0" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version = "1.7.1" }
 androidx-constraintLayout = { group = "androidx.constraintlayout", name = "constraintlayout", version = "2.1.4" }
-androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version = "1.3.0" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version = "1.3.2" }
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference_version" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core_version" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }

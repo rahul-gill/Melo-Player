@@ -256,7 +256,9 @@ class FullPlaybackControlsFragment :
                 libraryViewModel.insertSongs(listOf(song.toSongEntity(playlist.playListId)))
             }
             libraryViewModel.forceReload(ReloadType.Playlists)
-            requireContext().sendBroadcast(Intent(MusicService.FAVORITE_STATE_CHANGED))
+            requireContext().sendBroadcast(Intent(MusicService.FAVORITE_STATE_CHANGED).apply {
+                setPackage(this@FullPlaybackControlsFragment.requireContext().packageName)
+            })
         }
     }
 

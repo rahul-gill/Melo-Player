@@ -176,6 +176,7 @@ abstract class AbsMusicServiceActivity : AbsBaseActivity(), IMusicServiceEventLi
             "from_permissions_changed",
             true
         ) // just in case we need to know this at some point
+        intent.setPackage(this.packageName)
         sendBroadcast(intent)
         logD("sendBroadcast $hasPermissions")
     }

@@ -358,7 +358,7 @@ class MusicService : MediaBrowserServiceCompat(),
         uiThreadHandler = Handler(Looper.getMainLooper())
         ContextCompat.registerReceiver(this, widgetIntentReceiver, IntentFilter(APP_WIDGET_UPDATE), ContextCompat.RECEIVER_NOT_EXPORTED)
         ContextCompat.registerReceiver(this, updateFavoriteReceiver, IntentFilter(FAVORITE_STATE_CHANGED), ContextCompat.RECEIVER_NOT_EXPORTED)
-        registerReceiver(lockScreenReceiver, IntentFilter(Intent.ACTION_SCREEN_ON))
+        ContextCompat.registerReceiver(this, lockScreenReceiver, IntentFilter(Intent.ACTION_SCREEN_ON), ContextCompat.RECEIVER_EXPORTED)
         sessionToken = mediaSession?.sessionToken
         notificationManager = getSystemService()
         initNotification()
@@ -698,7 +698,7 @@ class MusicService : MediaBrowserServiceCompat(),
     }
 
     override fun onSharedPreferenceChanged(
-        sharedPreferences: SharedPreferences, key: String,
+        sharedPreferences: SharedPreferences, key: String?,
     ) {
         when (key) {
             PLAYBACK_SPEED, PLAYBACK_PITCH -> {
@@ -905,7 +905,9 @@ class MusicService : MediaBrowserServiceCompat(),
     fun toggleFavorite() {
         serviceScope.launch {
             toggleFavorite(currentSong)
-            sendBroadcast(Intent(FAVORITE_STATE_CHANGED))
+            sendBroadcast(Intent(FAVORITE_STATE_CHANGED).apply {
+                setPackage(this@MusicService.packageName)
+            })
         }
     }
 
@@ -1331,14 +1333,16 @@ class MusicService : MediaBrowserServiceCompat(),
     private fun registerBluetoothConnected() {
         Log.i(TAG, "registerBluetoothConnected: ")
         if (!bluetoothConnectedRegistered) {
-            registerReceiver(bluetoothReceiver, bluetoothConnectedIntentFilter)
+            ContextCompat.registerReceiver(this, bluetoothReceiver, bluetoothConnectedIntentFilter,
+                ContextCompat.RECEIVER_EXPORTED
+            )
             bluetoothConnectedRegistered = true
         }
     }
 
     private fun registerHeadsetEvents() {
         if (!headsetReceiverRegistered && isHeadsetPlugged) {
-            registerReceiver(headsetReceiver, headsetReceiverIntentFilter)
+            ContextCompat.registerReceiver(this, headsetReceiver, headsetReceiverIntentFilter, ContextCompat.RECEIVER_EXPORTED)
             headsetReceiverRegistered = true
         }
     }
@@ -1379,7 +1383,9 @@ class MusicService : MediaBrowserServiceCompat(),
     }
 
     private fun sendChangeInternal(what: String) {
-        sendBroadcast(Intent(what))
+        sendBroadcast(Intent(what).apply {
+            setPackage(this@MusicService.packageName)
+        })
         appWidgetBig.notifyChange(this, what)
         appWidgetClassic.notifyChange(this, what)
         appWidgetSmall.notifyChange(this, what)

@@ -155,7 +155,9 @@ public class BlacklistStore extends SQLiteOpenHelper {
   }
 
   private void notifyMediaStoreChanged() {
-    context.sendBroadcast(new Intent(MEDIA_STORE_CHANGED));
+    Intent intent = new Intent(MEDIA_STORE_CHANGED);
+    intent.setPackage(this.context.getPackageName());
+    context.sendBroadcast(intent);
   }
 
   @NonNull

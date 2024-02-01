@@ -71,6 +71,7 @@ class SongShareDialog : DialogFragment() {
                         Intent()
                             .setAction(Intent.ACTION_SEND)
                             .putExtra(Intent.EXTRA_TEXT, currentlyListening)
+                            .setPackage(requireContext().packageName)
                             .setType("text/plain"),
                         null
                     )
@@ -86,6 +87,7 @@ class SongShareDialog : DialogFragment() {
                             ShareInstagramStory.EXTRA_SONG,
                             song
                         )
+                        .setPackage(requireContext().packageName)
                     )
                 }
             }
