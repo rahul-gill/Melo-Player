@@ -2,6 +2,7 @@ package code.name.monkey.retromusic
 
 import androidx.room.Room
 import code.name.monkey.retromusic.auto.AutoMusicProvider
+import code.name.monkey.retromusic.auto.fresh.AutoMusicProviderFresh
 import code.name.monkey.retromusic.cast.RetroWebServer
 import code.name.monkey.retromusic.db.MIGRATION_23_24
 import code.name.monkey.retromusic.db.RetroDatabase
@@ -74,6 +75,20 @@ private val autoModule = module {
         )
     }
 }
+private val autoModuleFresh = module {
+    single {
+        AutoMusicProviderFresh(
+            androidContext(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
+}
+
 private val mainModule = module {
     single {
         androidContext().contentResolver

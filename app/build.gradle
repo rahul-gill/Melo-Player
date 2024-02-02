@@ -171,4 +171,8 @@ dependencies {
     implementation libs.fastscroll.library
     implementation libs.customactivityoncrash
     implementation libs.tankery.circularSeekBar
+
+    implementation libs.media3.common
+    implementation libs.media3.exoplayer
+    implementation libs.media3.session
 }
