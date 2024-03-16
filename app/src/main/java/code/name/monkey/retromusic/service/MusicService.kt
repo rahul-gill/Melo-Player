@@ -69,6 +69,7 @@ import code.name.monkey.retromusic.BuildConfig
 import code.name.monkey.retromusic.CLASSIC_NOTIFICATION
 import code.name.monkey.retromusic.COLORED_NOTIFICATION
 import code.name.monkey.retromusic.CROSS_FADE_DURATION
+import code.name.monkey.retromusic.GAP_LESS_PLAYBACK
 import code.name.monkey.retromusic.PLAYBACK_PITCH
 import code.name.monkey.retromusic.PLAYBACK_SPEED
 import code.name.monkey.retromusic.R
@@ -102,9 +103,11 @@ import code.name.monkey.retromusic.service.notification.PlayingNotificationImpl2
 import code.name.monkey.retromusic.service.playback.Playback
 import code.name.monkey.retromusic.service.playback.Playback.PlaybackCallbacks
 import code.name.monkey.retromusic.service.playback.PlaybackSleepTimer
+import code.name.monkey.retromusic.service.player.PlaybackManagerNew
 import code.name.monkey.retromusic.util.MusicUtil
 import code.name.monkey.retromusic.util.MusicUtil.toggleFavorite
 import code.name.monkey.retromusic.util.PackageValidator
+import code.name.monkey.retromusic.util.PreferenceUtil
 import code.name.monkey.retromusic.util.PreferenceUtil.crossFadeDuration
 import code.name.monkey.retromusic.util.PreferenceUtil.isAlbumArtOnLockScreen
 import code.name.monkey.retromusic.util.PreferenceUtil.isBluetoothSpeaker
@@ -149,7 +152,7 @@ class MusicService : MediaBrowserServiceCompat(),
 
     private lateinit var playbackManager: PlaybackManager
 
-    val playback: Playback? get() = playbackManager.playback
+//    val playback: Playback? get() = playbackManager.playback
 
     private var mPackageValidator: PackageValidator? = null
     private val mMusicProvider = get<AutoMusicProvider>(AutoMusicProvider::class.java)
@@ -351,7 +354,8 @@ class MusicService : MediaBrowserServiceCompat(),
         musicPlayerHandlerThread?.start()
         playerHandler = Handler(musicPlayerHandlerThread!!.looper)
 
-        playbackManager = PlaybackManager(this)
+        playbackManager = if(PreferenceUtil.isGapLessPlayback) PlaybackManagerImpl(this)
+            else PlaybackManagerNew(this)
         playbackManager.setCallbacks(this)
         setupMediaSession()
 
@@ -473,7 +477,7 @@ class MusicService : MediaBrowserServiceCompat(),
     }
 
     val audioSessionId: Int
-        get() = playbackManager.audioSessionId
+        get() = playbackManager.audioSessionId ?: 0
 
     val currentSong: Song
         get() = getSongAt(getPosition())
@@ -598,10 +602,10 @@ class MusicService : MediaBrowserServiceCompat(),
     }
 
     val songDurationMillis: Int
-        get() = playbackManager.songDurationMillis
+        get() = playbackManager.songDurationMillis ?: 0
 
     val songProgressMillis: Int
-        get() = playbackManager.songProgressMillis
+        get() = playbackManager.songProgressMillis?: 0
 
     fun handleAndSendChangeInternal(what: String) {
         handleChangeInternal(what)
@@ -701,6 +705,12 @@ class MusicService : MediaBrowserServiceCompat(),
         sharedPreferences: SharedPreferences, key: String?,
     ) {
         when (key) {
+           GAP_LESS_PLAYBACK -> {
+               playbackManager = if(PreferenceUtil.isGapLessPlayback) PlaybackManagerImpl(this)
+               else PlaybackManagerNew(this)
+               pause()
+               play()
+           }
             PLAYBACK_SPEED, PLAYBACK_PITCH -> {
                 updateMediaSessionPlaybackState()
                 playbackManager.setPlaybackSpeedPitch(playbackSpeed, playbackPitch)
@@ -879,7 +889,7 @@ class MusicService : MediaBrowserServiceCompat(),
         // Every chromecast method needs to run on main thread or you are greeted with IllegalStateException
         // So it will use Main dispatcher
         // And by using Default dispatcher for local playback we are reduce the burden of main thread
-        serviceScope.launch(if (playbackManager.isLocalPlayback) Default else Main) {
+        serviceScope.launch(if (/*playbackManager.isLocalPlayback*/true) Default else Main) {
             openTrackAndPrepareNextAt(position) { success ->
                 if (success) {
                     play()
@@ -896,7 +906,7 @@ class MusicService : MediaBrowserServiceCompat(),
     fun prepareNextImpl() {
         try {
             val nextPosition = getNextPosition(false)
-            playbackManager.setNextDataSource(getSongAt(nextPosition).uri.toString())
+            playbackManager.setNextDataSource(getSongAt(nextPosition).uri)
             this.nextPosition = nextPosition
         } catch (ignored: Exception) {
         }
@@ -1273,11 +1283,11 @@ class MusicService : MediaBrowserServiceCompat(),
     }
 
     fun switchToLocalPlayback() {
-        playbackManager.switchToLocalPlayback(this::restorePlaybackState)
+//        playbackManager.switchToLocalPlayback(this::restorePlaybackState)
     }
 
     fun switchToRemotePlayback(castPlayer: CastPlayer) {
-        playbackManager.switchToRemotePlayback(castPlayer, this::restorePlaybackState)
+//        playbackManager.switchToRemotePlayback(castPlayer, this::restorePlaybackState)
     }
 
     private fun restorePlaybackState(wasPlaying: Boolean, progress: Int) {

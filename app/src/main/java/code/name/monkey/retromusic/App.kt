@@ -26,6 +26,7 @@ import code.name.monkey.retromusic.billing.BillingManager
 import code.name.monkey.retromusic.helper.WallpaperAccentManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import timber.log.Timber
 
 class App : Application() {
 
@@ -35,7 +36,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-
+        Timber.plant(Timber.DebugTree())
         startKoin {
             androidContext(this@App)
             modules(appModules)

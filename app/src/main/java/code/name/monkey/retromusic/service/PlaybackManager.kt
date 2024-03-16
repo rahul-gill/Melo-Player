@@ -3,45 +3,62 @@ package code.name.monkey.retromusic.service
 import android.content.Context
 import android.content.Intent
 import android.media.audiofx.AudioEffect
+import android.net.Uri
 import code.name.monkey.retromusic.model.Song
 import code.name.monkey.retromusic.service.playback.Playback
 import code.name.monkey.retromusic.util.PreferenceUtil
 
+interface PlaybackManager {
+    fun setCallbacks(callbacks: Playback.PlaybackCallbacks)
+    val audioSessionId: Int?
+    val songDurationMillis: Int?
+    val songProgressMillis: Int?
+    val isPlaying: Boolean
+    fun setPlaybackSpeedPitch(speed: Float, pitch:Float)
+    fun maybeSwitchToCrossFade(crossFadeDuration: Int): Boolean
+    fun setCrossFadeDuration(crossFadeDuration: Int)
+    fun setNextDataSource(uri: Uri?)
+    fun pause(force: Boolean, onFinish: () -> Unit)
+    fun seek(millis: Int, force: Boolean): Int
+    fun setDataSource(song: Song, force: Boolean, completion: (Boolean) -> Unit )
+    fun play(onNotInitialized: () -> Unit)
+    fun release()
+}
 
-class PlaybackManager(val context: Context) {
+class PlaybackManagerImpl(val context: Context) : PlaybackManager{
 
     var playback: Playback? = null
     private var playbackLocation = PlaybackLocation.LOCAL
 
     val isLocalPlayback get() = playbackLocation == PlaybackLocation.LOCAL
 
-    val audioSessionId: Int
+    override val audioSessionId: Int
         get() = if (playback != null) {
             playback!!.audioSessionId
         } else 0
 
-    val songDurationMillis: Int
+    override val songDurationMillis: Int
         get() = if (playback != null) {
             playback!!.duration()
         } else -1
 
-    val songProgressMillis: Int
+    override val songProgressMillis: Int
         get() = if (playback != null) {
             playback!!.position()
         } else -1
 
-    val isPlaying: Boolean
+    override val isPlaying: Boolean
         get() = playback != null && playback!!.isPlaying
 
     init {
         playback = createLocalPlayback()
     }
 
-    fun setCallbacks(callbacks: Playback.PlaybackCallbacks) {
+    override fun setCallbacks(callbacks: Playback.PlaybackCallbacks) {
         playback?.callbacks = callbacks
     }
 
-    fun play(onNotInitialized: () -> Unit) {
+    override fun play(onNotInitialized: () -> Unit) {
         if (playback != null && !playback!!.isPlaying) {
             if (!playback!!.isInitialized) {
                 onNotInitialized()
@@ -61,7 +78,8 @@ class PlaybackManager(val context: Context) {
         }
     }
 
-    fun pause(force: Boolean, onPause: () -> Unit) {
+
+    override fun pause(force: Boolean, onPause: () -> Unit) {
         if (playback != null && playback!!.isPlaying) {
             if (force) {
                 playback?.pause()
@@ -78,9 +96,11 @@ class PlaybackManager(val context: Context) {
         }
     }
 
-    fun seek(millis: Int, force: Boolean): Int = playback!!.seek(millis, force)
+    override fun seek(millis: Int, force: Boolean): Int = playback!!.seek(millis, force)
 
-    fun setDataSource(
+
+
+    override fun setDataSource(
         song: Song,
         force: Boolean,
         completion: (success: Boolean) -> Unit,
@@ -88,11 +108,11 @@ class PlaybackManager(val context: Context) {
         playback?.setDataSource(song, force, completion)
     }
 
-    fun setNextDataSource(trackUri: String?) {
-        playback?.setNextDataSource(trackUri)
+    override fun setNextDataSource(trackUri: Uri?) {
+        playback?.setNextDataSource(trackUri?.toString())
     }
 
-    fun setCrossFadeDuration(duration: Int) {
+    override fun setCrossFadeDuration(duration: Int) {
         playback?.setCrossFadeDuration(duration)
     }
 
@@ -100,7 +120,7 @@ class PlaybackManager(val context: Context) {
      * @param crossFadeDuration CrossFade duration
      * @return Whether switched playback
      */
-    fun maybeSwitchToCrossFade(crossFadeDuration: Int): Boolean {
+    override fun maybeSwitchToCrossFade(crossFadeDuration: Int): Boolean {
         /* Switch to MultiPlayer if CrossFade duration is 0 and
                 Playback is not an instance of MultiPlayer */
         if (playback !is MultiPlayer && crossFadeDuration == 0) {
@@ -121,7 +141,7 @@ class PlaybackManager(val context: Context) {
         return false
     }
 
-    fun release() {
+    override fun release() {
         playback?.release()
         playback = null
         closeAudioEffectSession()
@@ -179,7 +199,7 @@ class PlaybackManager(val context: Context) {
         }
     }
 
-    fun setPlaybackSpeedPitch(playbackSpeed: Float, playbackPitch: Float) {
+    override fun setPlaybackSpeedPitch(playbackSpeed: Float, playbackPitch: Float) {
         playback?.setPlaybackSpeedPitch(playbackSpeed, playbackPitch)
     }
 }

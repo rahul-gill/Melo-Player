@@ -13,6 +13,7 @@ gradle = "8.2.2"
 dhaval2404_imagepicker_version = "2.1"
 chrisbanes_insetter_version = "0.6.1"
 jaudiotagger = "2.3.15"
+timber = "5.0.1"
 yslibrary_keyboardvisibilityevent_version = "3.0.0-RC3"
 koinAndroid = "3.4.0"
 kotlinGradlePlugin = "1.9.22"
@@ -125,6 +126,7 @@ androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", versi
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 androidx-navigation-safeargs-plugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigation_version" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 [plugins]
 github-ben-manes = { id = "com.github.ben-manes.versions", version.ref = "ben_manes_versoin" }
