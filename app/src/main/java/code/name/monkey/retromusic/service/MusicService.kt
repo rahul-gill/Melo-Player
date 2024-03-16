@@ -96,6 +96,7 @@ import code.name.monkey.retromusic.service.notification.PlayingNotificationImpl2
 import code.name.monkey.retromusic.service.playback.Playback.PlaybackCallbacks
 import code.name.monkey.retromusic.service.playback.PlaybackSleepTimer
 import code.name.monkey.retromusic.service.player.PlaybackManagerNew
+import code.name.monkey.retromusic.service.player.util.NoisyDeviceSwitchWatcher
 import code.name.monkey.retromusic.service.util.BluetoothWatcher
 import code.name.monkey.retromusic.util.MusicUtil
 import code.name.monkey.retromusic.util.MusicUtil.toggleFavorite
@@ -283,6 +284,14 @@ class MusicService : MediaBrowserServiceCompat(),
             }
         })
     }
+    private val noisyDeviceSwitchWatcher by lazy {
+        NoisyDeviceSwitchWatcher(this, onGettingNoisy = {
+            if(isPlaying){
+                pause()
+            }
+        })
+    }
+
 
     val isBluetoothConnected: Boolean
         get() = bluetoothWatcher.isBluetoothConnected
@@ -361,6 +370,7 @@ class MusicService : MediaBrowserServiceCompat(),
         sendBroadcast(Intent("$RETRO_MUSIC_PACKAGE_NAME.RETRO_MUSIC_SERVICE_CREATED"))
         registerHeadsetEvents()
         bluetoothWatcher.register()
+        noisyDeviceSwitchWatcher.register()
         mPackageValidator = PackageValidator(this, R.xml.allowed_media_browser_callers)
         mMusicProvider.setMusicService(this)
         storage = PersistentStorage.getInstance(this)
@@ -375,6 +385,7 @@ class MusicService : MediaBrowserServiceCompat(),
             headsetReceiverRegistered = false
         }
         bluetoothWatcher.unregister()
+        noisyDeviceSwitchWatcher.unregister()
         mediaSession?.isActive = false
         quit()
         releaseResources()

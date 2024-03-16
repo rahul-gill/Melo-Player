@@ -47,7 +47,7 @@ object PreferenceUtil {
     var libraryCategory: List<CategoryInfo>
         get() {
             val gson = Gson()
-            val collectionType = object : TypeToken<List<CategoryInfo>>() {}.type
+            val collectionType = (object : TypeToken<List<CategoryInfo>>(){}).type
 
             val data = sharedPreferences.getStringOrDefault(
                 LIBRARY_CATEGORIES,

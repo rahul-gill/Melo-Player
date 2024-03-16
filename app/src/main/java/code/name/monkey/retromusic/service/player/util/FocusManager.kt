@@ -14,7 +14,6 @@ class FocusManager(
     onFocusLoss: () -> Unit,
     onDuck: () -> Unit
 ) {
-    private var restoreOnFocusGain = false
     private val audioManager: AudioManager =
         ContextCompat.getSystemService(context, AudioManager::class.java)
             ?: throw IllegalStateException("AudioManager coudn't be initialized")

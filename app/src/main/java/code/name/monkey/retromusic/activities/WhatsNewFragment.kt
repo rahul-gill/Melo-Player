@@ -70,7 +70,7 @@ class WhatsNewFragment : BottomSheetDialogFragment() {
             val changeLog = buf.toString()
                 .replace(
                     "{style-placeholder}",
-                    "body { color: $contentColor; } li {color: $textColor;} h3 {color: $accentColorString;} .tag {background-color: $accentColorString; color: $accentTextColor; } div{background-color: $cardBackgroundColor;}"
+                    "body { color: $contentColor; } li {color: $textColor;} h3 {color: $accentColorString;} .highlight {color: $accentColorString;} .tag {background-color: $accentColorString; color: $accentTextColor; } div{background-color: $cardBackgroundColor;}"
                 )
                 .replace("{link-color}", colorToCSS(accentColor()))
                 .replace(

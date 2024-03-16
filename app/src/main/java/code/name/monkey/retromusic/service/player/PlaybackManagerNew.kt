@@ -8,6 +8,7 @@ import code.name.monkey.retromusic.service.PlaybackManager
 import code.name.monkey.retromusic.service.playback.Playback
 import code.name.monkey.retromusic.service.player.util.AudioEffectSessionManagement
 import code.name.monkey.retromusic.service.player.util.FocusManager
+import code.name.monkey.retromusic.service.player.util.NoisyDeviceSwitchWatcher
 import code.name.monkey.retromusic.util.PreferenceUtil
 import timber.log.Timber
 
@@ -16,7 +17,7 @@ class PlaybackManagerNew(private val context: Context): PlaybackManager {
 
     private var restoreOnFocusGain = false
     private val audioEffectSessionManagement = AudioEffectSessionManagement(context)
-    var callbacksTemp: Playback.PlaybackCallbacks? = null
+    private var callbacksTemp: Playback.PlaybackCallbacks? = null
     override fun setCallbacks(callbacks: Playback.PlaybackCallbacks){
         callbacksTemp = callbacks
     }
@@ -105,7 +106,13 @@ class PlaybackManagerNew(private val context: Context): PlaybackManager {
         }
     }
     override fun setDataSource(song: Song, force: Boolean, completion: (Boolean) -> Unit) {
-        setDataSource(song.uri, force, 0, completion)
+        try {
+            setDataSource(song.uri, force, 0, completion)
+        } catch (e: Exception){
+            e.printStackTrace()
+            completion(false)
+        }
+
     }
 
     fun setDataSource(
@@ -133,7 +140,9 @@ class PlaybackManagerNew(private val context: Context): PlaybackManager {
         val onPrepared = { it: SingleMediaPlayerWrapper ->
             completion(true)
             it.apply {
-                seek(startPosition)
+                if(startPosition != 0){
+                    seek(startPosition)
+                }
                 setSpeed(PreferenceUtil.playbackSpeed)
                 setPitch(PreferenceUtil.playbackPitch)
             }
