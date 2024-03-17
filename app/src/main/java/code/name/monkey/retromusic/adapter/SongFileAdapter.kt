@@ -41,13 +41,14 @@ import kotlin.math.pow
 
 class SongFileAdapter(
     override val activity: AppCompatActivity,
-    private var dataSet: List<File>,
+    dataSetIn: List<File>,
     private val itemLayoutRes: Int,
     private val iCallbacks: ICallbacks?
 ) : AbsMultiSelectAdapter<SongFileAdapter.ViewHolder, File>(
     activity, R.menu.menu_media_selection
 ), PopupTextProvider {
-
+    var dataSet: List<File> = dataSetIn
+        private set
     init {
         this.setHasStableIds(true)
     }

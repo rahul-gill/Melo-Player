@@ -26,7 +26,10 @@ import androidx.core.os.BundleCompat
 import androidx.core.text.parseAsHtml
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.withStarted
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.Loader
 import androidx.navigation.fragment.findNavController
@@ -47,6 +50,7 @@ import code.name.monkey.retromusic.extensions.textColorPrimary
 import code.name.monkey.retromusic.extensions.textColorSecondary
 import code.name.monkey.retromusic.fragments.base.AbsMainActivityFragment
 import code.name.monkey.retromusic.helper.MusicPlayerRemote.openQueue
+import code.name.monkey.retromusic.helper.SortOrder
 import code.name.monkey.retromusic.helper.menu.SongMenuHelper
 import code.name.monkey.retromusic.helper.menu.SongsMenuHelper
 import code.name.monkey.retromusic.interfaces.ICallbacks
@@ -57,6 +61,7 @@ import code.name.monkey.retromusic.misc.WrappedAsyncTaskLoader
 import code.name.monkey.retromusic.model.Song
 import code.name.monkey.retromusic.providers.BlacklistStore
 import code.name.monkey.retromusic.util.FileUtil
+import code.name.monkey.retromusic.util.PreferenceUtil
 import code.name.monkey.retromusic.util.PreferenceUtil.startDirectory
 import code.name.monkey.retromusic.util.ThemedFastScroller.create
 import code.name.monkey.retromusic.util.getExternalStorageDirectory
@@ -87,11 +92,17 @@ class FoldersFragment : AbsMainActivityFragment(R.layout.fragment_folder),
     private var storageAdapter: StorageAdapter? = null
     private val fileComparator = Comparator { lhs: File, rhs: File ->
         if (lhs.isDirectory && !rhs.isDirectory) {
-            return@Comparator -1
+            -1
         } else if (!lhs.isDirectory && rhs.isDirectory) {
-            return@Comparator 1
+            1
         } else {
-            return@Comparator lhs.name.compareTo(rhs.name, ignoreCase = true)
+            when(PreferenceUtil.directoriesSortOrder){
+                SortOrder.DirectoriesSortOrder.NAME_ASC -> lhs.name.compareTo(rhs.name, ignoreCase = true)
+                SortOrder.DirectoriesSortOrder.NAME_DESC -> rhs.name.compareTo(lhs.name, ignoreCase = true)
+                SortOrder.DirectoriesSortOrder.LAST_MODIFIED -> rhs.lastModified().compareTo(lhs.lastModified())
+                else -> lhs.name.compareTo(rhs.name, ignoreCase = true)
+            }
+
         }
     }
     private var storageItems = ArrayList<Storage>()
@@ -110,16 +121,25 @@ class FoldersFragment : AbsMainActivityFragment(R.layout.fragment_folder),
         setUpRecyclerView()
         setUpAdapter()
         setUpTitle()
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    if (!handleBackPress()) {
-                        remove()
-                        requireActivity().onBackPressedDispatcher.onBackPressed()
-                    }
+        //Don't know why but this callback is added before activity back pressed callback
+        //So pressing back in the fragment calls the callback from activity instead of this
+        //So adding the callback only after activity onStar
+        requireActivity().run {
+            viewLifecycleOwner.lifecycleScope.launch {
+                lifecycle.withStarted {
+                    onBackPressedDispatcher.addCallback(
+                        viewLifecycleOwner,
+                        object : OnBackPressedCallback(true) {
+                            override fun handleOnBackPressed() {
+                                if (!handleBackPress()) {
+                                    remove()
+                                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                                }
+                            }
+                        })
                 }
-            })
+            }
+        }
         if (savedInstanceState == null) {
             switchToFileAdapter()
             setCrumb(
@@ -348,9 +368,17 @@ class FoldersFragment : AbsMainActivityFragment(R.layout.fragment_folder),
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
         menu.add(0, R.id.action_settings, 2, R.string.action_settings)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        menu.addSubMenu(0,R.id.action_sort_order, 3, R.string.sort_order).apply {
+
+            add(1, R.id.action_sort_order_title, 0, R.string.sort_order_a_z)
+
+            add(1, R.id.action_sort_order_title_desc, 1, R.string.sort_order_z_a)
+
+            add(1, R.id.action_song_sort_order_date_modified, 2, R.string.sort_order_date_modified)
+        }
+
         menu.removeItem(R.id.action_grid_size)
         menu.removeItem(R.id.action_layout_type)
-        menu.removeItem(R.id.action_sort_order)
         ToolbarContentTintHelper.handleOnCreateOptionsMenu(
             requireContext(), toolbar, menu, ATHToolbarActivity.getToolbarBackgroundColor(
                 toolbar
@@ -358,8 +386,32 @@ class FoldersFragment : AbsMainActivityFragment(R.layout.fragment_folder),
         )
     }
 
+    fun refreshSortOrder(){
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
+            adapter?.dataSet?.let { adapterDataSet ->
+                Collections.sort(adapterDataSet, fileComparator)
+                withContext(Dispatchers.Main){
+                    adapter?.swapDataSet(adapterDataSet)
+                }
+            }
+        }
+
+    }
+
     override fun onMenuItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.action_sort_order_title -> {
+                PreferenceUtil.directoriesSortOrder = SortOrder.DirectoriesSortOrder.NAME_ASC
+                refreshSortOrder()
+            }
+            R.id.action_sort_order_title_desc -> {
+                PreferenceUtil.directoriesSortOrder = SortOrder.DirectoriesSortOrder.NAME_DESC
+                refreshSortOrder()
+            }
+            R.id.action_song_sort_order_date_modified -> {
+                PreferenceUtil.directoriesSortOrder = SortOrder.DirectoriesSortOrder.LAST_MODIFIED
+                refreshSortOrder()
+            }
             R.id.action_go_to_start_directory -> {
                 setCrumb(
                     Crumb(

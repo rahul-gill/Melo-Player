@@ -128,6 +128,12 @@ class SortOrder {
         }
     }
 
+    object DirectoriesSortOrder {
+        const val NAME_ASC = "name_asc"
+        const val NAME_DESC = "name_desc"
+        const val LAST_MODIFIED = "last_modified"
+    }
+
     /**
      * Artist song sort order entries.
      */

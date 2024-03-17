@@ -141,6 +141,14 @@ object PreferenceUtil {
         )
         set(value) = sharedPreferences.edit { putBoolean(ALBUM_ARTISTS_ONLY, value) }
 
+
+    var directoriesSortOrder
+        get() = sharedPreferences.getStringOrDefault(
+            DIRECTORIES_SORT_ORDER,
+            DirectoriesSortOrder.NAME_ASC
+        )
+        set(value) = sharedPreferences.edit { putString(DIRECTORIES_SORT_ORDER, value) }
+
     var albumDetailSongSortOrder
         get() = sharedPreferences.getStringOrDefault(
             ALBUM_DETAIL_SONG_SORT_ORDER,
