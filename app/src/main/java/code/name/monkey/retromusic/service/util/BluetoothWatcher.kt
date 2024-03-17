@@ -74,11 +74,13 @@ class BluetoothWatcher(val context: Context, onDeviceConnected: () -> Unit) {
             bluetoothConnectedIntentFilter,
             ContextCompat.RECEIVER_EXPORTED
         )
+        isRegistered = true
     }
 
     fun unregister() {
         if (isRegistered) {
             context.unregisterReceiver(bluetoothReceiver)
+            isRegistered = false
         }
     }
 

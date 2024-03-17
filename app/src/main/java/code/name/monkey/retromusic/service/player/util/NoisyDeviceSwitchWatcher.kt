@@ -35,11 +35,13 @@ class NoisyDeviceSwitchWatcher(private val context: Context, onGettingNoisy: () 
             becomingNoisyReceiverIntentFilter,
             ContextCompat.RECEIVER_EXPORTED
         )
+        isRegistered = true
     }
 
     fun unregister() {
         if (isRegistered) {
             context.unregisterReceiver(receiver)
+            isRegistered = false
         }
     }
 }
