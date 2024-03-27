@@ -39,7 +39,6 @@ object Constants {
 
     const val DATA = "_data"
 
-    @Suppress("Deprecation")
     val baseProjection = arrayOf(
         BaseColumns._ID, // 0
         MediaStore.Audio.AudioColumns.TITLE, // 1
