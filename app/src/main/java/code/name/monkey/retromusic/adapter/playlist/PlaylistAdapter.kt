@@ -32,6 +32,8 @@ import code.name.monkey.retromusic.adapter.base.MediaEntryViewHolder
 import code.name.monkey.retromusic.db.PlaylistEntity
 import code.name.monkey.retromusic.db.PlaylistWithSongs
 import code.name.monkey.retromusic.db.toSongs
+import code.name.monkey.retromusic.dialogs.DeletePlaylistDialog
+import code.name.monkey.retromusic.dialogs.SavePlaylistDialog
 import code.name.monkey.retromusic.extensions.dipToPix
 import code.name.monkey.retromusic.glide.RetroGlideExtension.playlistOptions
 import code.name.monkey.retromusic.glide.playlistPreview.PlaylistPreview
@@ -133,6 +135,14 @@ class PlaylistAdapter(
 
     override fun onMultipleItemAction(menuItem: MenuItem, selection: List<PlaylistWithSongs>) {
         when (menuItem.itemId) {
+            R.id.action_save_playlist -> {
+                SavePlaylistDialog.create(selection)
+                    .show(activity.supportFragmentManager, "SavePlaylist")
+            }
+            R.id.action_delete_playlist -> {
+                DeletePlaylistDialog.create(selection.map { it.playlistEntity })
+                    .show(activity.supportFragmentManager, "DELETE_PLAYLIST")
+            }
             else -> SongsMenuHelper.handleMenuClick(
                 activity,
                 getSongList(selection),

@@ -33,6 +33,27 @@ fun Fragment.createNewFile(
     startForResult.launch(intent)
 }
 
+fun Fragment.openDirectoryAccessDialog(
+    onResultOk: (Uri) -> Unit,
+    onFailure: () -> Unit
+) {
+    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+    val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+        { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.also { uri ->
+                    onResultOk(uri)
+                } ?: onFailure()
+
+            } else {
+                onFailure()
+            }
+
+        }
+    startForResult.launch(intent)
+}
+
 fun Context.openUrl(url: String) {
     val i = Intent(Intent.ACTION_VIEW)
     i.data = url.toUri()

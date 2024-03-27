@@ -473,6 +473,8 @@
     <!-- SAF guide -->
     <string name="save_playlist_title">Save as file</string>
     <string name="save_playlists_title">Save as files</string>
+
+    <string name="saved_multiple_playlists">Saved %1$d playlists.</string>
     <string name="saved_playlist_to">Saved playlist to %s.</string>
     <string name="saving_changes">Saving changes</string>
     <string name="scan_media">Scan media</string>
