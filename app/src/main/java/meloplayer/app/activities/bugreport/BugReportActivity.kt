@@ -21,8 +21,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
-import meloplayer.appthemehelper.util.TintHelper
-import meloplayer.appthemehelper.util.ToolbarContentTintHelper
 import meloplayer.app.R
 import meloplayer.app.activities.base.AbsThemeActivity
 import meloplayer.app.activities.bugreport.model.DeviceInfo
@@ -30,6 +28,8 @@ import meloplayer.app.databinding.ActivityBugReportBinding
 import meloplayer.app.extensions.accentColor
 import meloplayer.app.extensions.setTaskDescriptionColorAuto
 import meloplayer.app.extensions.showToast
+import meloplayer.appthemehelper.util.TintHelper
+import meloplayer.appthemehelper.util.ToolbarContentTintHelper
 
 open class BugReportActivity : AbsThemeActivity() {
 
@@ -86,6 +86,6 @@ open class BugReportActivity : AbsThemeActivity() {
 
     companion object {
         private const val ISSUE_TRACKER_LINK =
-            "https://github.com/RetroMusicPlayer/RetroMusicPlayer/issues"
+            "https://github.com/rahul-gill/Melo-Player/issues"
     }
 }

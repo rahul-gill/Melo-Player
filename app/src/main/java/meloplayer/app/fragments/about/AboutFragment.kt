@@ -18,6 +18,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ShareCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -59,6 +60,11 @@ class AboutFragment : Fragment(R.layout.fragment_about), View.OnClickListener {
         binding.aboutContent.cardRetroInfo.appShare.setOnClickListener(this)
         binding.aboutContent.cardRetroInfo.donateLink.setOnClickListener(this)
         binding.aboutContent.cardRetroInfo.bugReportLink.setOnClickListener(this)
+        binding.aboutContent.cardSocial.root.isVisible = false
+        binding.aboutContent.cardRetroInfo.appTranslation.isVisible = false
+        binding.aboutContent.cardRetroInfo.appRate.isVisible = false
+        binding.aboutContent.cardRetroInfo.donateLink.isVisible = false
+        binding.aboutContent.cardRetroInfo.faqLink.isVisible = false
 
         binding.aboutContent.cardSocial.telegramLink.setOnClickListener(this)
         binding.aboutContent.cardSocial.instagramLink.setOnClickListener(this)
@@ -72,16 +78,16 @@ class AboutFragment : Fragment(R.layout.fragment_about), View.OnClickListener {
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.pinterestLink -> openUrl(Constants.PINTEREST)
-            R.id.faqLink -> openUrl(Constants.FAQ_LINK)
-            R.id.telegramLink -> openUrl(Constants.APP_TELEGRAM_LINK)
+            //R.id.pinterestLink -> openUrl(Constants.PINTEREST)
+            //R.id.faqLink -> openUrl(Constants.FAQ_LINK)
+            //R.id.telegramLink -> openUrl(Constants.APP_TELEGRAM_LINK)
             R.id.appGithub -> openUrl(Constants.GITHUB_PROJECT)
-            R.id.appTranslation -> openUrl(Constants.TRANSLATE)
-            R.id.appRate -> openUrl(Constants.RATE_ON_GOOGLE_PLAY)
-            R.id.appShare -> shareApp()
-            R.id.donateLink -> NavigationUtil.goToSupportDevelopment(requireActivity())
-            R.id.instagramLink -> openUrl(Constants.APP_INSTAGRAM_LINK)
-            R.id.twitterLink -> openUrl(Constants.APP_TWITTER_LINK)
+            //R.id.appTranslation -> openUrl(Constants.TRANSLATE)
+            //R.id.appRate -> openUrl(Constants.RATE_ON_GOOGLE_PLAY)
+            //R.id.appShare -> shareApp()
+            //R.id.donateLink -> NavigationUtil.goToSupportDevelopment(requireActivity())
+            //R.id.instagramLink -> openUrl(Constants.APP_INSTAGRAM_LINK)
+            //R.id.twitterLink -> openUrl(Constants.APP_TWITTER_LINK)
             R.id.changelog -> NavigationUtil.gotoWhatNews(requireActivity())
             R.id.openSource -> NavigationUtil.goToOpenSource(requireActivity())
             R.id.bugReportLink -> NavigationUtil.bugReport(requireActivity())

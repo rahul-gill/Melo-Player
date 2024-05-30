@@ -1,13 +1,15 @@
+import meloplayer.build.VersionProperties
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlin.android)
 }
 android {
-    compileSdk = 34
+    compileSdk = VersionProperties.compileSdk
     namespace = "meloplayer.appthemehelper"
 
     defaultConfig {
-        minSdk = 21
+        minSdk = VersionProperties.minSdk
     }
     buildTypes {
         release {

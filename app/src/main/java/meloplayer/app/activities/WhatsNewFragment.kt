@@ -14,19 +14,17 @@ import android.webkit.WebViewClient
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.FragmentActivity
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import meloplayer.app.BuildConfig
+import meloplayer.app.databinding.FragmentWhatsNewBinding
+import meloplayer.app.extensions.accentColor
+import meloplayer.app.util.PreferenceUtil.lastVersion
 import meloplayer.appthemehelper.util.ATHUtil.isWindowBackgroundDark
 import meloplayer.appthemehelper.util.ColorUtil.isColorLight
 import meloplayer.appthemehelper.util.ColorUtil.lightenColor
 import meloplayer.appthemehelper.util.MaterialValueHelper.getPrimaryTextColor
-import meloplayer.app.BuildConfig
-import meloplayer.app.Constants
-import meloplayer.app.databinding.FragmentWhatsNewBinding
-import meloplayer.app.extensions.accentColor
-import meloplayer.app.extensions.openUrl
-import meloplayer.app.util.PreferenceUtil.lastVersion
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.Locale
 
 class WhatsNewFragment : BottomSheetDialogFragment() {
     private var _binding: FragmentWhatsNewBinding? = null
@@ -98,7 +96,7 @@ class WhatsNewFragment : BottomSheetDialogFragment() {
         }
         setChangelogRead(requireContext())
         binding.tgFab.setOnClickListener {
-            openUrl(Constants.TELEGRAM_CHANGE_LOG)
+            //TODO: openUrl(Constants.TELEGRAM_CHANGE_LOG)
         }
         binding.tgFab.accentColor()
         binding.tgFab.shrink()

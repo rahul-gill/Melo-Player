@@ -1,3 +1,7 @@
+import meloplayer.build.VersionProperties
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlin.android)
@@ -5,41 +9,43 @@ plugins {
     alias(libs.plugins.navigationSafeargs)
     alias(libs.plugins.ksp)
 }
-val versionMajor = 1
-val versionMinor = 0
-val versionPatch = 0
-val versionBuild = 0
 
 android {
     namespace = "meloplayer.app"
-    compileSdk = 34
+    compileSdk = VersionProperties.compileSdk
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 34
+        minSdk = VersionProperties.minSdk
+        targetSdk = VersionProperties.compileSdk
         vectorDrawables.useSupportLibrary = true
         applicationId = "meloplayer.app"
-        versionCode = versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
-        versionName = "$versionMajor.$versionMinor.$versionPatch"
+        versionCode = VersionProperties.versionCode
+        versionName = VersionProperties.versionName
     }
-//    def signingProperties = getProperties("retro.properties")
-//    def releaseSigning
-//    if (signingProperties != null) {
-//        releaseSigning = signingConfigs.create("release") {
-//            storeFile file(getProperty(signingProperties, "storeFile"))
-//            keyAlias getProperty(signingProperties, "keyAlias")
-//            storePassword getProperty(signingProperties, "storePassword")
-//            keyPassword getProperty(signingProperties, "keyPassword")
-//        }
-//    } else {
-//        releaseSigning = signingConfigs.debug
-//    }
+    val releaseSigning = run {
+        val keystorePropertiesFile = rootProject.file("keystore.properties")
+        if(!keystorePropertiesFile.exists()){
+            return@run null
+        }
+        val keystoreProperties = Properties()
+        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+        signingConfigs.create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-//            signingConfig = releaseSigning
+            if(releaseSigning != null){
+                signingConfig = releaseSigning
+            } else if(System.getenv().containsKey("SIGN_RELEASE_WITH_DEBUG")){
+                signingConfig = signingConfigs.getByName("debug")
+            }
         }
         debug {
             applicationIdSuffix = ".debug"
@@ -78,21 +84,7 @@ android {
 
 }
 
-//def getProperties(String fileName) {
-//    Properties properties = new Properties()
-//    def file = rootProject.file(fileName)
-//    if (file.exists()) {
-//        file.withInputStream { stream -> properties.load(stream) }
-//    } else {
-//        properties = null
-//    }
-//    return properties
-//}
-//
-//static def getProperty(Properties properties, String name) {
-//    return properties?.getProperty(name) ?: "$name missing"
-//}
-
+val playstoreImplementation by configurations
 dependencies {
     implementation( project(":appthemehelper"))
     implementation( libs.gridLayout)
@@ -109,9 +101,8 @@ dependencies {
 
     implementation( libs.androidx.mediarouter)
     //Cast Dependencies
-    //TODO playstoreImplementation( libs.google.play.services.cast.framework)
-    //WebServer by NanoHttpd
-    //TODO playstoreImplementation( libs.nanohttpd)
+    playstoreImplementation( libs.google.play.services.cast.framework)
+    playstoreImplementation( libs.nanohttpd)
 
     implementation( libs.androidx.navigation.runtime.ktx)
     implementation( libs.androidx.navigation.fragment.ktx)
@@ -130,8 +121,8 @@ dependencies {
 
     implementation( libs.androidx.core.splashscreen)
 
-    //TODO playstoreImplementation( libs.google.feature.delivery)
-    //TODO playstoreImplementation( libs.google.play.review)
+    playstoreImplementation( libs.google.feature.delivery)
+    playstoreImplementation( libs.google.play.review)
 
     implementation( libs.android.material)
 
@@ -164,7 +155,7 @@ dependencies {
 
     implementation( libs.org.eclipse.egit.github.core)
     implementation( libs.jaudiotagger)
-    //TODO playstoreImplementation( libs.android.lab.library)
+    playstoreImplementation( libs.android.lab.library)
     implementation( libs.slidableactivity)
     implementation( libs.material.intro)
     implementation( libs.dhaval2404.imagepicker)
