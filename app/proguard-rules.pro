@@ -2,7 +2,7 @@
 # By default, the flags in this file are appended to flags specified
 # in /Users/hemanths/Library/Android/sdk/tools/proguard/proguard-android.txt
 # You can edit the include path and order by changing the proguardFiles
-# directive in build.gradle.
+# directive in build.gradle.kts.
 #
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
@@ -71,6 +71,6 @@
 -keep class * extends androidx.fragment.app.Fragment{}
 -keepnames class * extends android.os.Parcelable
 -keepnames class * extends java.io.Serializable
--keep class code.name.monkey.retromusic.network.model.** { *; }
--keep class code.name.monkey.retromusic.model.** { *; }
+-keep class meloplayer.app.network.model.** { *; }
+-keep class meloplayer.app.model.** { *; }
 -keep class com.google.android.material.bottomsheet.** { *; }

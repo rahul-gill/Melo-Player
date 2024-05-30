@@ -17,7 +17,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <code.name.monkey.retromusic.views.TopAppBarLayout
+    <meloplayer.app.views.TopAppBarLayout
         android:id="@+id/appBarLayout"
         style="?appBarLayoutStyle"
         android:layout_width="match_parent"
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:transitionGroup="true">
 
-            <code.name.monkey.retromusic.views.HomeImageLayout
+            <meloplayer.app.views.HomeImageLayout
                 android:id="@+id/imageLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

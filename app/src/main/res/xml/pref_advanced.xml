@@ -2,25 +2,25 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <code.name.monkey.retromusic.preferences.BlacklistPreference
+    <meloplayer.app.preferences.BlacklistPreference
         android:key="blacklist"
         android:layout="@layout/list_item_view"
         android:summary="@string/pref_summary_blacklist"
         android:title="@string/pref_header_blacklist"
         app:icon="@drawable/ic_music_note_off" />
 
-    <code.name.monkey.appthemehelper.common.prefs.supportv7.ATESwitchPreference
+    <meloplayer.appthemehelper.common.prefs.supportv7.ATESwitchPreference
         android:defaultValue="false"
         android:key="whitelist_music"
         android:layout="@layout/list_item_view_switch"
         android:summary="@string/pref_summary_whitelist"
         android:title="@string/pref_title_whitelist" />
 
-    <code.name.monkey.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory
+    <meloplayer.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory
         android:layout="@layout/preference_category_title"
         android:title="@string/pref_header_playlists">
 
-        <code.name.monkey.appthemehelper.common.prefs.supportv7.ATEListPreference
+        <meloplayer.appthemehelper.common.prefs.supportv7.ATEListPreference
             android:defaultValue="this_month"
             android:entries="@array/pref_playlists_last_added_interval_titles"
             android:entryValues="@array/pref_playlists_last_added_interval_values"
@@ -31,12 +31,12 @@
             android:title="@string/pref_title_last_added_interval"
             app:icon="@drawable/ic_playlist_add" />
 
-    </code.name.monkey.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory>
-    <code.name.monkey.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory
+    </meloplayer.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory>
+    <meloplayer.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory
         android:layout="@layout/preference_category_title"
         android:title="@string/pref_header_advanced">
 
-        <code.name.monkey.appthemehelper.common.prefs.supportv7.ATESeekBarPreference
+        <meloplayer.appthemehelper.common.prefs.supportv7.ATESeekBarPreference
             android:defaultValue="30"
             android:key="filter_song"
             android:layout="@layout/list_item_view_seekbar"
@@ -46,7 +46,7 @@
             app:icon="@drawable/ic_filter_song"
             app:showSeekBarValue="true" />
 
-        <code.name.monkey.appthemehelper.common.prefs.supportv7.ATESwitchPreference
+        <meloplayer.appthemehelper.common.prefs.supportv7.ATESwitchPreference
             android:defaultValue="false"
             android:key="pause_on_zero_volume"
             android:layout="@layout/list_item_view_switch"
@@ -54,7 +54,7 @@
             android:title="@string/pref_keep_pause_on_zero_volume_title"
             app:icon="@drawable/ic_pause" />
 
-        <code.name.monkey.appthemehelper.common.prefs.supportv7.ATESwitchPreference
+        <meloplayer.appthemehelper.common.prefs.supportv7.ATESwitchPreference
             android:defaultValue="false"
             android:key="keep_screen_on"
             android:layout="@layout/list_item_view_switch"
@@ -63,29 +63,29 @@
             app:icon="@drawable/ic_settings_brightness" />
 
 
-    </code.name.monkey.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory>
+    </meloplayer.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory>
 
-    <code.name.monkey.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory
+    <meloplayer.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory
         android:layout="@layout/preference_category_title"
         android:title="@string/pref_header_media_back_behavior">
 
-        <code.name.monkey.appthemehelper.common.prefs.supportv7.ATESwitchPreference
+        <meloplayer.appthemehelper.common.prefs.supportv7.ATESwitchPreference
             android:defaultValue="false"
             android:key="prev_song_on_back_h"
             android:layout="@layout/list_item_view_switch"
             android:summary="@string/pref_summary_prev_song_on_back_headset"
             android:title="@string/pref_title_prev_song_on_back_headset" />
 
-        <code.name.monkey.appthemehelper.common.prefs.supportv7.ATESwitchPreference
+        <meloplayer.appthemehelper.common.prefs.supportv7.ATESwitchPreference
             android:defaultValue="false"
             android:key="prev_song_on_back_b"
             android:layout="@layout/list_item_view_switch"
             android:summary="@string/pref_summary_prev_song_on_back_bluetooth"
             android:title="@string/pref_title_prev_song_on_back_bluetooth" />
 
-    </code.name.monkey.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory>
+    </meloplayer.appthemehelper.common.prefs.supportv7.ATEPreferenceCategory>
 
-    <code.name.monkey.appthemehelper.common.prefs.supportv7.ATEListPreference
+    <meloplayer.appthemehelper.common.prefs.supportv7.ATEListPreference
         android:defaultValue="auto"
         android:entries="@array/pref_language_names"
         android:entryValues="@array/pref_language_codes"
