@@ -43,9 +43,10 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             if(releaseSigning != null){
                 signingConfig = releaseSigning
-            } else if(System.getenv().containsKey("SIGN_RELEASE_WITH_DEBUG")){
-                signingConfig = signingConfigs.getByName("debug")
             }
+//            else if(System.getenv().containsKey("SIGN_RELEASE_WITH_DEBUG")){
+                signingConfig = signingConfigs.getByName("debug")
+//            }
         }
         debug {
             applicationIdSuffix = ".debug"
@@ -140,6 +141,9 @@ dependencies {
     implementation( libs.koin.core)
     implementation( libs.koin.android)
 
+    implementation(libs.androidx.media3.exoplayer)
+
+
     implementation( libs.glide)
     ksp (libs.glide.ksp)
     implementation( libs.glide.okhttp3.integration)
@@ -162,4 +166,8 @@ dependencies {
     implementation( libs.fastscroll.library)
     implementation( libs.customactivityoncrash)
     implementation( libs.tankery.circularSeekBar)
+
+    debugImplementation(files("libs/lib-decoder-ffmpeg-debug.aar"))
+    releaseImplementation(files("libs/lib-decoder-ffmpeg-release.aar"))
+
 }

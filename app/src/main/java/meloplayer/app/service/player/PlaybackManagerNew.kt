@@ -2,13 +2,14 @@ package meloplayer.app.service.player
 
 import android.content.Context
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import meloplayer.app.extensions.uri
 import meloplayer.app.model.Song
 import meloplayer.app.service.PlaybackManager
 import meloplayer.app.service.playback.Playback
 import meloplayer.app.service.player.util.AudioEffectSessionManagement
 import meloplayer.app.service.player.util.FocusManager
-import meloplayer.app.service.player.util.NoisyDeviceSwitchWatcher
 import meloplayer.app.util.PreferenceUtil
 import timber.log.Timber
 
@@ -106,12 +107,15 @@ class PlaybackManagerNew(private val context: Context): PlaybackManager {
         }
     }
     override fun setDataSource(song: Song, force: Boolean, completion: (Boolean) -> Unit) {
-        try {
-            setDataSource(song.uri, force, 0, completion)
-        } catch (e: Exception){
-            e.printStackTrace()
-            completion(false)
+        Handler(Looper.getMainLooper()).post {
+            try {
+                setDataSource(song.uri, force, 0, completion)
+            } catch (e: Exception){
+                e.printStackTrace()
+                completion(false)
+            }
         }
+
 
     }
 
@@ -149,16 +153,18 @@ class PlaybackManagerNew(private val context: Context): PlaybackManager {
         }
 
         cleanUpCurrentPlayer()
-        player = SingleMediaPlayerWrapper(
-            context, uri,
-            onFinish = { onFinish() },
-            onError = { what, extra ->
-                onError(what, extra)
-            },
-            onPrepared = {
-                onPrepared(it)
-            }
-        )
+
+            player = SingleMediaPlayerWrapper(
+                context, uri,
+                onFinish = { onFinish() },
+                onError = { what, extra ->
+                    onError(what, extra)
+                },
+                onPrepared = {
+                    onPrepared(it)
+                }
+            )
+
     }
 
 
@@ -176,8 +182,11 @@ class PlaybackManagerNew(private val context: Context): PlaybackManager {
         cleanUpCurrentPlayer()
         callbacksTemp?.onTrackEnded()
         nextTrackUriPath?.run {
-            setDataSource(this)
-            play()
+            Handler(Looper.getMainLooper()).post {
+                setDataSource(this)
+                play()
+            }
+
         }
     }
 

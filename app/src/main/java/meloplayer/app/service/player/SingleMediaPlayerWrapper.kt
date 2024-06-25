@@ -1,11 +1,18 @@
 package meloplayer.app.service.player
 
 import android.content.Context
-import android.media.MediaPlayer
-import android.media.PlaybackParams
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import androidx.annotation.OptIn
+import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackParameters
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.ExoPlayer
 import meloplayer.app.service.player.util.Fader
 import meloplayer.app.util.PreferenceUtil
 import timber.log.Timber
@@ -28,7 +35,8 @@ typealias RadioPlayerOnPlaybackPositionListener = (PlaybackPosition) -> Unit
 typealias RadioPlayerOnFinishListener = () -> Unit
 typealias RadioPlayerOnErrorListener = (Int, Int) -> Unit
 
-class SingleMediaPlayerWrapper constructor(
+class SingleMediaPlayerWrapper @OptIn(UnstableApi::class)
+constructor(
     private val context: Context,
     uri: Uri,
     var onFinish: RadioPlayerOnFinishListener? = null,
@@ -38,8 +46,8 @@ class SingleMediaPlayerWrapper constructor(
     var usable = false
     var hasPlayedOnce = false
 
-    private val unsafeMediaPlayer: MediaPlayer
-    private val mediaPlayer: MediaPlayer?
+    private val unsafeMediaPlayer: ExoPlayer
+    private val mediaPlayer: ExoPlayer?
         get() = if (usable) unsafeMediaPlayer else null
 
     private var onPlaybackPosition: RadioPlayerOnPlaybackPositionListener? = null
@@ -64,7 +72,9 @@ class SingleMediaPlayerWrapper constructor(
     val fadePlayback: Boolean
         get() = PreferenceUtil.isCrossfadeEnabled
     var audioSessionId: Int?
+        @OptIn(UnstableApi::class)
         get() = mediaPlayer?.audioSessionId
+        @OptIn(UnstableApi::class)
         set(value) {
             if (value != null) {
                 mediaPlayer?.audioSessionId = value
@@ -77,62 +87,108 @@ class SingleMediaPlayerWrapper constructor(
         get() = mediaPlayer?.isPlaying ?: false
 
     init {
-        unsafeMediaPlayer = MediaPlayer().also { ump ->
 
-            ump.setOnPreparedListener {
-                usable = true
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    ump.playbackParams.setAudioFallbackMode(PlaybackParams.AUDIO_FALLBACK_MODE_DEFAULT)
-                }
-                createDurationTimer()
-                onPrepared?.invoke(this)
-            }
-            ump.setOnCompletionListener {
-                usable = false
-                onFinish?.invoke()
-            }
-            ump.setOnErrorListener { _, what, extra ->
-                usable = false
-                onError?.invoke(what, extra)
-                true
-            }
-            ump.setDataSource(context, uri)
-            ump.prepareAsync()
+        unsafeMediaPlayer = ExoPlayer.Builder(context)
+            .setRenderersFactory(DefaultRenderersFactory(context).apply {
+                setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+            }).build().also { ump ->
+                ump.addListener(object: Player.Listener {
+                    override fun onPlaybackStateChanged(playbackState: Int) {
+                        when(playbackState){
+                            Player.STATE_READY -> {
+
+                                Handler(Looper.getMainLooper()).post {
+                                    usable = true
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        //TODO: what to do about it ump.playbackParams.setAudioFallbackMode(PlaybackParams.AUDIO_FALLBACK_MODE_DEFAULT)
+                                    }
+                                    createDurationTimer()
+                                    onPrepared?.invoke(this@SingleMediaPlayerWrapper)
+                                }
+                            }
+                            Player.STATE_ENDED -> {
+                                Handler(Looper.getMainLooper()).post {
+                                    usable = false
+                                    onFinish?.invoke()
+                                }
+                            }
+
+                            Player.STATE_BUFFERING -> {
+                                //TODO()
+                            }
+
+                            Player.STATE_IDLE -> {
+                                //TODO()
+                            }
+                        }
+                    }
+
+                    override fun onEvents(player: Player, events: Player.Events) {
+                        if (events.contains(Player.EVENT_PLAYER_ERROR)) {
+                            Handler(Looper.getMainLooper()).post {
+                                usable = false
+                                onError?.invoke(-1, -1)
+                            }
+                        }
+                    }
+                })
+                ump.setMediaItem(MediaItem.fromUri(uri))
+                ump.prepare()
+
+
+//            ump.setOnPreparedListener {
+//
+//            }
+//            ump.setOnCompletionListener {
+//
+//            }
+//            ump.setOnErrorListener { _, what, extra ->
+//
+//            }
+//            ump.setDataSource(context, uri)
+//            ump.prepareAsync()
         }
     }
 
 
     fun cleanUpBeforeDestroy() {
-        Timber.d("cleanUpBeforeDestroy start")
-        usable = false
-        destroyDurationTimer()
-        unsafeMediaPlayer.stop()
-        unsafeMediaPlayer.reset()
-        unsafeMediaPlayer.release()
-        Timber.d("cleanUpBeforeDestroy end")
+        Handler(Looper.getMainLooper()).post {
+            Timber.d("cleanUpBeforeDestroy start")
+            usable = false
+            destroyDurationTimer()
+            unsafeMediaPlayer.stop()
+            //unsafeMediaPlayer.reset()
+            unsafeMediaPlayer.release()
+            Timber.d("cleanUpBeforeDestroy end")
+
+        }
     }
 
     fun start(){
-        Timber.d("'start' start")
-        mediaPlayer?.let {
-            it.start()
-            if (!hasPlayedOnce) {
-                hasPlayedOnce = true
-                setSpeed(speed)
-                setPitch(pitch)
+
+        Handler(Looper.getMainLooper()).post {
+            Timber.d("'start' start")
+            mediaPlayer?.let {
+                it.play()
+                //it.start()
+                if (!hasPlayedOnce) {
+                    hasPlayedOnce = true
+                    setSpeed(speed)
+                    setPitch(pitch)
+                }
             }
+            Timber.d("'start' end")
         }
-        Timber.d("'start' end")
     }
 
-    fun pause(){
+    fun pause() = Handler(Looper.getMainLooper()).post{
         Timber.d("'pause' start")
         mediaPlayer?.pause()
         Timber.d("'pause' end")
     }
-    fun seek(to: Int){
+    fun seek(to: Int) = Handler(Looper.getMainLooper()).post{
         Timber.d("'seek' start")
-        mediaPlayer?.seekTo(to)
+        mediaPlayer?.seekTo(to.toLong())
         Timber.d("'seek' end")
     }
 
@@ -141,7 +197,7 @@ class SingleMediaPlayerWrapper constructor(
         to: Float,
         forceFade: Boolean = false,
         onFinish: (Boolean) -> Unit,
-    ) {
+    )  = Handler(Looper.getMainLooper()).post{
         Timber.d("'setVolume' start to$to")
         fader?.stop()
         when {
@@ -168,25 +224,25 @@ class SingleMediaPlayerWrapper constructor(
         Timber.d("'setVolume' end")
     }
 
-    fun setVolumeInstant(to: Float) {
+    fun setVolumeInstant(to: Float) =Handler(Looper.getMainLooper()).post {
         Timber.d("'setVolumeInstant' start")
         volume = to
-        mediaPlayer?.setVolume(to, to)
+        mediaPlayer?.volume = to
         Timber.d("'setVolumeInstant' end")
     }
 
     @JvmName("setSpeedTo")
-    fun setSpeed(to: Float) {
+    fun setSpeed(to: Float) = Handler(Looper.getMainLooper()).post{
         Timber.d("'setSpeed' start")
         if (!hasPlayedOnce) {
             speed = to
-            return
+            return@post
         }
         mediaPlayer?.let {
             val isPlaying = it.isPlaying
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    it.playbackParams = it.playbackParams.setSpeed(to)
+                    it.playbackParameters = it.playbackParameters.withSpeed(to)
                 }
                 speed = to
             } catch (err: Exception) {
@@ -201,18 +257,17 @@ class SingleMediaPlayerWrapper constructor(
     }
 
     @JvmName("setPitchTo")
-    fun setPitch(to: Float) {
+    fun setPitch(to: Float) =Handler(Looper.getMainLooper()).post{
         Timber.d("'setPitch' start")
         if (!hasPlayedOnce) {
             pitch = to
-            return
+            return@post
         }
         mediaPlayer?.let {
             val isPlaying = it.isPlaying
             try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    it.playbackParams = it.playbackParams.setPitch(to)
-                }
+                it.playbackParameters =
+                    PlaybackParameters(it.playbackParameters.speed, to)
                 pitch = to
             } catch (err: Exception) {
                 Log.e("RadioPlayer", "changing pitch failed", err)
@@ -228,11 +283,14 @@ class SingleMediaPlayerWrapper constructor(
         onPlaybackPosition = listener
     }
 
-    private fun createDurationTimer() {
+    internal fun createDurationTimer() {
         playbackPositionUpdater = kotlin.concurrent.timer(period = 100L) {
             playbackPosition?.let {
-                onPlaybackPosition?.invoke(it)
-            }
+                Handler(Looper.getMainLooper()).post{
+                    onPlaybackPosition?.invoke(it)
+
+                }
+                }
         }
     }
 

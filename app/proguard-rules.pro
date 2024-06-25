@@ -74,3 +74,5 @@
 -keep class meloplayer.app.network.model.** { *; }
 -keep class meloplayer.app.model.** { *; }
 -keep class com.google.android.material.bottomsheet.** { *; }
+
+
