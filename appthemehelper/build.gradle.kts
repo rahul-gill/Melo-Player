@@ -1,9 +1,11 @@
-import meloplayer.build.VersionProperties
+import meloplayer.buildlogic.VersionProperties
 
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlin.android)
 }
+
+
 android {
     compileSdk = VersionProperties.compileSdk
     namespace = "meloplayer.appthemehelper"

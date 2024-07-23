@@ -1,4 +1,6 @@
-import meloplayer.build.VersionProperties
+import meloplayer.buildlogic.VersionProperties
+import meloplayer.buildlogic.buildTime
+import meloplayer.buildlogic.gitCommitSha
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -21,6 +23,10 @@ android {
         applicationId = "meloplayer.app"
         versionCode = VersionProperties.versionCode
         versionName = VersionProperties.versionName
+
+
+        buildConfigField("String", "GIT_SHA", "\"$gitCommitSha\"")
+        buildConfigField("String", "BUILD_TIME", "\"$buildTime\"")
     }
     val releaseSigning = run {
         val keystorePropertiesFile = rootProject.file("keystore.properties")
