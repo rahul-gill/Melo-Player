@@ -32,3 +32,4 @@ fun String.runCommand(workingDir: File = File("./")): String?
     .directory(workingDir)
     .start()
     .inputStream.readAllBytes()?.let { String(it) }
+    ?.trim()

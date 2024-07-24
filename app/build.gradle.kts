@@ -173,6 +173,10 @@ dependencies {
     implementation( libs.customactivityoncrash)
     implementation( libs.tankery.circularSeekBar)
 
+    implementation( libs.androidx.datastore)
+    implementation( libs.androidx.startup)
+
+
     debugImplementation(files("libs/lib-decoder-ffmpeg-debug.aar"))
     releaseImplementation(files("libs/lib-decoder-ffmpeg-release.aar"))
 
