@@ -15,6 +15,7 @@ import meloplayer.app.network.provideDefaultCache
 import meloplayer.app.network.provideLastFmRest
 import meloplayer.app.network.provideLastFmRetrofit
 import meloplayer.app.network.provideOkHttp
+import meloplayer.app.preferences.PreferenceManager
 import meloplayer.app.repository.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -80,6 +81,9 @@ private val mainModule = module {
     }
     single {
         RetroWebServer(get())
+    }
+    single {
+        PreferenceManager(get())
     }
 }
 private val dataModule = module {
